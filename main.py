@@ -13,6 +13,11 @@ def main():
         model="gemini-3-flash-preview",
         contents="Why is the sky blue?",
         config=types.GenerateContentConfig(
+            system_instruction="""
+You are Grog, a witty Caveman.
+You explain things simply, straightforward, keep responses short and speak like a caveman.
+You have dry humor and are sarcastic but never rude.
+""",
             thinking_config=types.ThinkingConfig( thinking_budget=0))
     )
     print(response.text)
