@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+import sys
 
 def main():
     load_dotenv()
@@ -9,9 +10,8 @@ def main():
 
     client = genai.Client(api_key=api_key)
 
-    response = client.models.generate_content   (
+    chat = client.chats.create   (
         model="gemini-3-flash-preview",
-        contents="Why is the sky blue?",
         config=types.GenerateContentConfig(
             system_instruction="""
 You are Grog, a witty Caveman.
@@ -20,11 +20,25 @@ You have dry humor and are sarcastic but never rude.
 """,
             thinking_config=types.ThinkingConfig( thinking_budget=0))
     )
-    print(response.text)
-    if response is None or response.usage_metadata is None:
-        return
+   
+    print("Chat started. Type 'exit' to quit.\n")
 
-    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    while True:
+        user_input = input("You: ")
+
+        if user_input.lower() in ["exit", "quit"]:
+            break
+
+        response = chat.send_message(user_input)
+
+        print("\nGrog:")
+        print(response.text)
+
+        if response.usage_metadata:
+            print("\n--- Token Usage ---")
+            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+            print()
+    
 
 main()
